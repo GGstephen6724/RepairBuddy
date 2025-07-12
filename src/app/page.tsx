@@ -1,103 +1,99 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState } from "react";
+import { default as SignupForm } from "@/components/ui/SignupForm";
+import { default as LoginForm } from "@/components/ui/LoginForm";
+import { BackToHome } from "@/components/ui/BackToHome";
+
+export default function LandingPage() {
+  const [mode, setMode] = useState<"welcome" | "signup" | "login">("welcome");
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main style={styles.main}>
+      <BackToHome />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {mode === "welcome" && (
+        <div style={styles.welcomeBox}>
+          <h1 style={styles.title}>Welcome to RepairBuddy</h1>
+          <p style={styles.description}>
+            Your go-to platform for vehicle and motorcycle repair guides.
+          </p>
+          <div style={styles.buttons}>
+            <button onClick={() => setMode("signup")} style={styles.button}>
+              Get Started
+            </button>
+            <button
+              onClick={() => setMode("login")}
+              style={{ ...styles.button, ...styles.loginButton }}
+            >
+              Log In
+            </button>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      )}
+
+      {mode === "signup" && <SignupForm onBack={() => setMode("welcome")} />}
+      {mode === "login" && <LoginForm onBack={() => setMode("welcome")} />}
+    </main>
   );
 }
+
+const styles: { [key: string]: React.CSSProperties } = {
+  main: {
+    height: "100vh",
+    width: "100vw",
+    display: "flex",
+    flexDirection: "column", // vertically center content
+    justifyContent: "center",
+    alignItems: "center",
+    background: 'url("/michael-wade-UJdiHd3iH1g-unsplash.jpg")',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    padding: "0 40px",
+    color: "#ffffff",
+  },
+  welcomeBox: {
+    textAlign: "center",
+    maxWidth: "600px",
+    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",  // translucent dark bg
+    backdropFilter: "blur(8px)",           // frosted glass effect
+    padding: "2rem",
+    borderRadius: "1rem",
+  },
+  title: {
+    fontSize: "3rem",
+    marginBottom: "1rem",
+    color: "#ffffff",
+  },
+  description: {
+    fontSize: "1.25rem",
+    marginTop: "0",
+    marginRight: "auto",
+    marginBottom: "1rem",
+    marginLeft: "auto",
+    color: "#ffffff",
+    maxWidth: "400px",
+  },
+  buttons: {
+    display: "flex",
+    justifyContent: "center",
+    gap: "1rem",
+  },
+  button: {
+    backgroundColor: "#4f46e5",
+    color: "white",
+    padding: "0.75rem 1.5rem",
+    borderRadius: "8px",
+    textDecoration: "none",
+    fontWeight: "bold",
+    transition: "background-color 0.3s ease",
+    display: "inline-block",
+    border: "none",
+    cursor: "pointer",
+  },
+  loginButton: {
+    backgroundColor: "#555",
+  },
+};
