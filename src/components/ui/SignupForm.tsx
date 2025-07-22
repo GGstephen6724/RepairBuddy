@@ -4,9 +4,10 @@ import { supabase } from "@/lib/supabase";
 
 type SignupFormProps = {
   onBack: () => void;
+  onSwitchToLogin?: () => void;
 };
 
-export default function SignupForm({ onBack }: SignupFormProps) {
+export default function SignupForm({ onBack, onSwitchToLogin }: SignupFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -33,16 +34,16 @@ export default function SignupForm({ onBack }: SignupFormProps) {
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Create your account</h2>
-      <form onSubmit={handleSignup} style={styles.form}>
+    <div className="w-full max-w-md mx-auto p-6 rounded-xl shadow-md bg-white text-black">
+      <h2 className="text-2xl font-semibold mb-4">Create your account</h2>
+      <form onSubmit={handleSignup} className="space-y-4">
         <input
           type="email"
           placeholder="Email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={styles.input}
+          className="w-full border border-gray-300 rounded px-3 py-2"
         />
         <input
           type="password"
@@ -51,86 +52,41 @@ export default function SignupForm({ onBack }: SignupFormProps) {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
-          style={styles.input}
+          className="w-full border border-gray-300 rounded px-3 py-2"
         />
 
-        <div style={styles.buttonsRow}>
+        <div className="flex gap-4 mt-4">
           <button
             type="submit"
             disabled={loading}
-            style={{ ...styles.button, ...styles.loginButton }}
+            className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
             {loading ? "Signing up..." : "Sign Up"}
           </button>
           <button
             type="button"
             onClick={onBack}
-            style={{ ...styles.button, ...styles.backButton }}
+            className="flex-1 bg-gray-600 text-white py-2 rounded hover:bg-gray-700"
           >
             Back
           </button>
         </div>
       </form>
-      {message && <p style={styles.message}>{message}</p>}
+
+      {message && <p className="mt-4 text-left text-red-600">{message}</p>}
+
+      {onSwitchToLogin && (
+        <p className="mt-4 text-sm text-gray-600 text-center">
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="text-blue-600 hover:underline font-semibold bg-none border-0 p-0 cursor-pointer"
+          >
+            Log in here
+          </button>
+        </p>
+      )}
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    width: "500px",
-    padding: "2rem",
-    borderRadius: "12px",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    color: "#fff",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-    backdropFilter: "blur(8px)",
-    alignSelf: "center",
-    margin: "2rem auto", // centers horizontally and adds margin top-bottom
-  },
-  heading: {
-    marginBottom: "1.5rem",
-    fontSize: "1.75rem",
-    fontWeight: "bold",
-    textAlign: "left",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem",
-  },
-  input: {
-    padding: "0.75rem 1rem",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    fontSize: "1rem",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    color: "#fff",
-  },
-  buttonsRow: {
-    display: "flex",
-    gap: "1rem",
-    marginTop: "1rem",
-  },
-  button: {
-    flex: 1,
-    padding: "0.75rem",
-    borderRadius: "8px",
-    border: "none",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-  loginButton: {
-    backgroundColor: "#4f46e5",
-    color: "white",
-  },
-  backButton: {
-    backgroundColor: "#555",
-    color: "white",
-  },
-  message: {
-    marginTop: "1rem",
-    color: "#fff",
-    textAlign: "left",
-  },
-};

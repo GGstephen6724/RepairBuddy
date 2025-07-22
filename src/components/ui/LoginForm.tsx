@@ -6,132 +6,97 @@ import { useRouter } from "next/navigation";
 
 type LoginFormProps = {
   onBack: () => void;
+  onSwitchToSignup: () => void;
 };
 
-export default function LoginForm({ onBack }: LoginFormProps) {
+export default function LoginForm({ onBack, onSwitchToSignup }: LoginFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const router = useRouter();
 
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
+  const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
-    if (error) {
-      setMessage(`Error: ${error.message}`);
-    } else {
-      setMessage("Logged in successfully!");
-      router.push("/dashboard");
-    }
+  setLoading(false);
 
-    setLoading(false);
+  if (error) {
+    alert(error.message);
+  } else if (data.user) {
+    alert("Login successful!");
+    router.push("/"); // redirect to homepage
+    setTimeout(() => {
+      window.location.reload(); // refresh the page to update state
+    }, 100);
   }
+};
+
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.heading}>Log In to Your Account</h2>
-      <form onSubmit={handleLogin} style={styles.form}>
-        <input
-          type="email"
-          placeholder="Email address"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={6}
-          style={styles.input}
-        />
-
-        <div style={styles.buttonsRow}>
-          <button
-            type="submit"
-            disabled={loading}
-            style={{ ...styles.button, ...styles.loginButton }}
-          >
-            {loading ? "Logging in..." : "Log In"}
-          </button>
-          <button
-            type="button"
-            onClick={onBack}
-            style={{ ...styles.button, ...styles.backButton }}
-          >
-            Back
-          </button>
+    <div className="w-full max-w-md mx-auto p-6 rounded-xl shadow-md bg-white">
+      <h2 className="text-2xl font-semibold mb-4">Login</h2>
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div>
+          <label className="block mb-1">Email</label>
+          <input
+            type="email"
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
+        <div>
+          <label className="block mb-1">Password</label>
+          <input
+            type="password"
+            className="w-full border border-gray-300 rounded px-3 py-2"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
+          {loading ? "Logging in..." : "Login"}
+        </button>
       </form>
-      {message && <p style={styles.message}>{message}</p>}
+
+      <div className="mt-4 text-center text-sm text-gray-600">
+        Don’t have an account?{" "}
+        <button
+          type="button"
+          onClick={() => {
+            if (onSwitchToSignup) {
+              onSwitchToSignup();
+            } else {
+              console.warn("onSwitchToSignup prop not provided");
+            }
+          }}
+          className="text-blue-600 hover:underline"
+        >
+          Sign up here
+        </button>
+      </div>
+
+      <div className="mt-2 text-center">
+        <button
+          type="button"
+          onClick={onBack}
+          className="text-sm text-gray-400 hover:underline"
+        >
+          ← Back to welcome
+        </button>
+      </div>
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    width: "500px",
-    padding: "2rem",
-    borderRadius: "12px",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    color: "#fff",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-    backdropFilter: "blur(8px)",
-  },
-  heading: {
-    marginBottom: "1.5rem",
-    fontSize: "1.75rem",
-    fontWeight: "bold",
-    textAlign: "left",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem",
-  },
-  input: {
-    padding: "0.75rem 1rem",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    fontSize: "1rem",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    color: "#fff",
-  },
-  buttonsRow: {
-    display: "flex",
-    gap: "1rem",
-    marginTop: "1rem",
-  },
-  button: {
-    flex: 1,
-    padding: "0.75rem",
-    borderRadius: "8px",
-    border: "none",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-  loginButton: {
-    backgroundColor: "#4f46e5",
-    color: "white",
-  },
-  backButton: {
-    backgroundColor: "#555",
-    color: "white",
-  },
-  message: {
-    marginTop: "1rem",
-    color: "#fff",
-    textAlign: "left",
-  },
-};

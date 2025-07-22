@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-//import { BackToHome } from "@/components/ui/BackToHome";
-import Navbar from "@/components/ui/Navbar";
+import { supabase } from "@/lib/supabase";
 import motorcyclesRaw from "@/lib/motorcycles";
+import LoginForm from "@/components/ui/LoginForm";
+import SignupForm from "@/components/ui/SignupForm";
 
 type MotorcycleData = {
   [make: string]: {
@@ -21,6 +22,23 @@ export default function HomePage() {
   const [years, setYears] = useState<string[]>([]);
   const [makes, setMakes] = useState<string[]>([]);
   const [models, setModels] = useState<string[]>([]);
+
+  const [showLogin, setShowLogin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) setUser(data.user);
+    };
+    getUser();
+  }, []);
+
+  function handleLogout() {
+    supabase.auth.signOut();
+    setUser(null);
+  }
 
   useEffect(() => {
     const allYearsSet = new Set<string>();
@@ -76,10 +94,30 @@ export default function HomePage() {
   }
 
   return (
-    <>
-      <Navbar />
+    <div className="relative min-h-screen">
+      {/* Top-right auth area */}
+      <div className="absolute top-4 right-4 z-50">
+        {user ? (
+          <div className="flex items-center gap-4 text-white bg-black/50 px-4 py-2 rounded shadow">
+            <span>Welcome, {user.email}</span>
+            <button
+              onClick={handleLogout}
+              className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowLogin(true)}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded shadow"
+          >
+            Login
+          </button>
+        )}
+      </div>
+
       <main style={styles.main}>
-        
         <div style={styles.container}>
           <h1 style={styles.title}>Welcome to RepairBuddy</h1>
           <p style={styles.subtitle}>Tell us about your motorcycle:</p>
@@ -137,7 +175,33 @@ export default function HomePage() {
           </div>
         </div>
       </main>
-    </>
+
+      {/* Login Modal */}
+      {showLogin && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+          <LoginForm
+            onBack={() => setShowLogin(false)}
+            onSwitchToSignup={() => {
+              setShowLogin(false);
+              setShowSignup(true);
+            }}
+          />
+        </div>
+      )}
+
+      {/* Signup Modal */}
+      {showSignup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+          <SignupForm
+            onBack={() => setShowSignup(false)}
+            onSwitchToLogin={() => {
+              setShowSignup(false);
+              setShowLogin(true);
+            }}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
