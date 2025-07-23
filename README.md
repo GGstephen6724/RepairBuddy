@@ -48,4 +48,4 @@ You can check out the Next.js GitHub repository - your feedback and contribution
 The easiest way to deploy your Next.js app is to use the Vercel Platform from the creators of Next.js.
 
 
-![ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/d08aa0ac-68bd-45ca-b6d9-b771cc08c288)
+![ezgif com-optimize](https://github.com/user-attachments/assets/f2cc8226-c61c-470d-9e1d-cfba4780c902)
